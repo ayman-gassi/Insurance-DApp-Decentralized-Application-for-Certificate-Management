@@ -16,12 +16,13 @@ const AddCertificatePage = ({ contract }) => {
     try {
       setStatus("📤 Upload du certificat sur IPFS…");
       const hash = await uploadFile(file);
+      console.log(`📄 Certificat uploadé avec succès ! Hash: ${hash}`);
 
       setStatus("⛓️ Envoi de la transaction sur la blockchain…");
       const tx = await contract.addCertificate(client, hash);
       await tx.wait();
 
-      setStatus("✅ Certificat d'assurance ajouté avec succès !");
+      setStatus("✅ Certificat d'assurance ajouté avec succès !" + tx.hash);
       setClient("");
       setFile(null);
     } catch (err) {

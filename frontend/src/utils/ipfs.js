@@ -9,35 +9,26 @@ const IPFS_GATEWAY_URL = "http://127.0.0.1:8080/ipfs";
  */
 export const uploadFile = async (file) => {
   try {
-    if (!file) {
-      throw new Error("Aucun fichier fourni");
-    }
+    if (!file) throw new Error("Aucun fichier fourni");
 
-    // Créer un FormData pour l'upload
     const formData = new FormData();
     formData.append("file", file);
 
-    // Envoyer le fichier à IPFS
-    const response = await fetch(`${IPFS_API_URL}/add`, {
+    const response = await fetch(`${IPFS_API_URL}/add?pin=true`, {
       method: "POST",
       body: formData,
     });
 
-    if (!response.ok) {
-      throw new Error(`Erreur HTTP: ${response.status}`);
-    }
-
-    const result = await response.json();
-    const hash = result.Hash;
-
-    console.log("Fichier uploadé sur IPFS avec le hash:", hash);
-    return hash;
-
+    const text = await response.text();
+    const lines = text.trim().split("\n");
+    const result = JSON.parse(lines[lines.length - 1]); // IPFS peut retourner plusieurs lignes JSON
+    return result.Hash;
   } catch (error) {
-    console.error("Erreur lors de l'upload IPFS:", error);
+    console.error("Erreur IPFS:", error);
     throw error;
   }
 };
+
 
 /**
  * Récupère un fichier depuis IPFS
