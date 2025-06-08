@@ -1,7 +1,24 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Shield, FileText, Search } from "lucide-react";
 
-const HomePage = () => {
+const HomePage = ({ contract }) => {
+  const [totalCertificates, setTotalCertificates] = useState(0);
+
+  useEffect(() => {
+    const fetchTotalCertificates = async () => {
+      if (contract) {
+        try {
+          const total = await contract.totalCertificates();
+          setTotalCertificates(Number(total));
+        } catch (error) {
+          console.error("Error fetching total certificates:", error);
+        }
+      }
+    };
+
+    fetchTotalCertificates();
+  }, [contract]);
+
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
       {/* Electric Grid Background */}
@@ -41,6 +58,13 @@ const HomePage = () => {
               Une solution sécurisée et décentralisée pour émettre, stocker et
               vérifier vos certificats d'assurance sur la blockchain Ethereum.
             </p>
+            
+            {/* Total Certificates Counter */}
+            <div className="mt-8 inline-block bg-gray-900/80 border border-green-500/30 rounded-lg px-6 py-3 backdrop-blur-sm">
+              <p className="text-green-400 font-semibold">
+                Total des Certificats Émis: {totalCertificates}
+              </p>
+            </div>
           </div>
         </div>
 
